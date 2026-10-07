@@ -63,8 +63,28 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const isbn = req.params.isbn;
+    const new_review = req.body.review;
+    const username = req.session.authorization.username;
+
+    // Check whether the book is present
+    if (!Object.hasOwn(books, isbn)) {
+        return res.status(404).json({
+            message: "Invalid ISBN. Cannot add review for non-existing book."
+        });
+    }
+
+    if (!new_review) {
+        return res.status(400).json({
+            message: "Review is required."
+        });
+    }
+
+    books[isbn].reviews[username] = new_review;
+
+    return res.status(200).json({
+        message: "Review added successfully."
+    });
 });
 
 module.exports.authenticated = regd_users;
