@@ -62,6 +62,8 @@ public_users.get('/isbn/:isbn', async function (req, res) {
 });
 
 // Get book details based on author
+// Old implementation from Task 3
+/*
 public_users.get('/author/:author',function (req, res) {
     const author = req.params.author;
     const isbns = Object.keys(books);
@@ -72,6 +74,23 @@ public_users.get('/author/:author',function (req, res) {
         }
     });
     res.send(booksByAuthor);
+});
+*/
+// New implementation for Task 12
+public_users.get('/author/:author', async function (req, res) {
+    const author = req.params.author;
+
+    try {
+        const data = await Promise.resolve(books);
+
+        const booksByAuthor = Object.keys(data)
+            .filter(isbn => data[isbn].author === author)
+            .map(isbn => data[isbn]);
+
+        res.json(booksByAuthor);
+    } catch (error) {
+        res.status(500).json({ message: "Error retrieving books" });
+    }
 });
 
 // Get all books based on title
